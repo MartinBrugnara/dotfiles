@@ -1,0 +1,72 @@
+[user]
+    name = Martin Brugnara
+    email = martin.brugnara@gmail.com
+    signingkey = F36DD5E9
+
+[commit]
+    gpgSign=true
+
+[github]
+    user = MartinBrugnara
+
+[grep]
+    linenumber = true
+
+[color]
+    ui = true
+
+[push]
+    default = simple
+    followTags = true
+
+[filter "lfs"]
+    clean = git-lfs clean %f
+    smudge = git-lfs smudge %f
+    required = true
+
+[credential]
+    helper = osxkeychain
+
+[alias]
+    lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- [%G?] %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+    pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
+    stash-all = stash save --include-untracked
+
+[core]
+    excludesfile = ~/.gitignore
+
+    # Treat spaces before tabs and all kinds of trailing whitespace as an error
+    # [default] trailing-space: looks for spaces at the end of a line
+    # [default] space-before-tab: looks for spaces before tabs at the beginning of a line
+    whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+
+    # Make `git rebase` safer on OS X
+    # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+    trustctime = false
+    editor = vim
+
+[apply]
+    # Detect whitespace errors when applying a patch
+    whitespace = fix
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold # line info
+    old = red # deletions
+    new = green # additions
+
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = cyan
+
+[merge]
+    # Include summaries of merged commits in newly created merge commit messages
+    log = true
+[gpg]
+    program = gpg2

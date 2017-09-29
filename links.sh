@@ -1,0 +1,11 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+find "$DIR/files/" -maxdepth 1 |while read -r fname; do
+  file=$(basename "$fname")
+  dst="$HOME/$file"
+  [[ "$file" != "files" ]] &&  \
+    [[ ! -f "$dst" ]] && \
+    ln -vs "$fname" "$dst"
+done
