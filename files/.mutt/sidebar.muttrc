@@ -1,0 +1,29 @@
+# shamelessly copied from
+# http://www.lunar-linux.org/index.php?option=com_content&task=view&id=44
+
+# set up the sidebar, default visible
+set sidebar_width       = 30
+set sidebar_visible     = no
+set sidebar_sort_method = alpha
+# set sidebar_shortpath     = yes
+
+
+# color of folders with new mail
+#color sidebar black black
+#color sidebar_new cyan black
+
+# I don't need these. just for documentation purposes. See below.
+# sidebar-scroll-up
+# sidebar-scroll-down
+
+#
+# toggle toolbar visibility, use 'b'
+macro index \Cb '<enter-command>toggle sidebar_visible<enter><refresh>'
+macro pager \Cb '<enter-command>toggle sidebar_visible<enter><redraw-screen>'
+
+
+# Sidebar Navigation ---------------------------------
+# (use j,k for navigation)
+bind index,pager <down>   sidebar-next
+bind index,pager <up>     sidebar-prev
+bind index,pager <right>  sidebar-open

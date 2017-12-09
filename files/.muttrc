@@ -1,0 +1,68 @@
+# TODO: complete from http://stevelosh.com/blog/2012/10/the-homely-mutt/
+
+source  "grep -A2 'mutt' $HOME/.secrets.sh |"
+
+# Folder hooks
+folder-hook 'account.martin.brugnara.gmail.com' source ~/.mutt/gmail'
+folder-hook 'account.martin.brugnara.unitn.it' source ~/.mutt/unitn'
+
+# Default account
+source ~/.mutt/account.martin.brugnara.unitn.it
+
+# Macros for switching accounts
+macro index <f2> '<sync-mailbox><refresh><enter-command>source ~/.mutt/account.martin.brugnara.unitn.it<enter><change-folder>!<enter>'
+macro index <f3> '<sync-mailbox><refresh><enter-command>source ~/.mutt/account.martin.brugnara.gmail.com<enter><change-folder>!<enter>'
+
+# Fetch mail shortcut
+bind index,pager G imap-fetch-mail
+
+set editor="vim -c 'set textwidth=0'"
+set sleep_time = 0 # remove silly pause
+set delete # don't ask me to delete messages - just do it!
+auto_view text/html
+
+# connection
+set imap_check_subscribed
+unset imap_passive
+set imap_keepalive=300
+set mail_check=120
+set smtp_authenticators = 'gssapi:login'
+set ssl_starttls = yes
+
+# compose
+set send_charset="us-ascii:utf-8"
+set sleep_time = 0
+set fast_reply=yes
+set include=yes
+alternates martin.brugnra@gmail.com martin@campingpuntaindiani.it martin.brugnara@unitn.it mb@disi.unitn.eu
+
+# Address Book
+set query_command="goobook query %s"
+macro index,pager a "<pipe-message>goobook add<return>" "add sender to google contacts"
+bind editor <Tab> complete-query
+
+# View URLs inside Mutt
+macro index \cb   "|urlview\n"
+macro pager \cb   "|urlview\n"
+
+
+source ~/.mutt/sidebar.muttrc
+source ~/.mutt/pager.muttrc
+source ~/.mutt/index.muttrc
+source ~/.mutt/mutt-colors-solarized-dark-256.muttrc
+# source ~/.mutt/colors.muttrc
+
+# == GPG ==
+source ~/.mutt/gpg.rc
+#source ~/.mutt/crypto
+
+
+set pgp_use_gpg_agent = yes
+set pgp_sign_as = AD351834ABDABFF74C13C03430931A1FF36DD5E9
+set pgp_timeout = 3600
+set crypt_autosign = yes
+set crypt_replyencrypt = yes
+set crypt_verify_sig=yes
+
+set pgp_autosign
+set pgp_auto_decode

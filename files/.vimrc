@@ -165,7 +165,7 @@ autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhite
 " Configuration
 
 let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+let g:syntastic_check_on_wq = 1
 let g:syntastic_c_compiler="clang"          " Use clang as default
 let g:syntastic_c_compiler_options="-std=c99 -pedantic"
 let g:syntastic_cpp_compiler="clang++"      " Use clang as default

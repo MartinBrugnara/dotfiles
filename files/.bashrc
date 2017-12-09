@@ -39,6 +39,11 @@ if [ -f "$NVIM" ]; then
 fi
 
 #------------------------------------------------------------------------------#
+# Neomutt is mutt
+alias mutt=$(which neomutt)
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+#------------------------------------------------------------------------------#
 # BASH HISTORY
 # ignore duplicate cmd and command starting with ' '
 export HISTCONTROL=ignoreboth
