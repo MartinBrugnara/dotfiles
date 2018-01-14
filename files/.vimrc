@@ -59,7 +59,23 @@ set number
 " set ruler
 let &colorcolumn="80,120"   " Show coding limits
 hi LineNr term=bold cterm=NONE ctermfg=White ctermbg=NONE gui=NONE guifg=White guibg=NONE
-set statusline=%{fugitive#statusline()}%{virtualenv#statusline()}%y\ %f\ %m%=%c:%l/%L
+
+" == Support function
+function! WordCount()
+   let s:old_status = v:statusmsg
+   let position = getpos(".")
+   exe ":silent normal g\<c-g>"
+   let stat = v:statusmsg
+   let s:word_count = 0
+   if stat != '--No lines in buffer--'
+     let s:word_count = str2nr(split(v:statusmsg)[11])
+     let v:statusmsg = s:old_status
+   end
+   call setpos('.', position)
+   return s:word_count
+endfunction
+
+set statusline=%{fugitive#statusline()}%{virtualenv#statusline()}%y\ %f\ %m%=wc:%{WordCount()}\ %c:%l/%L
 set nocursorline
 
 if has('mouse')
