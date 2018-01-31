@@ -23,7 +23,6 @@ call vundle#begin()
     Plugin 'leafgarland/typescript-vim'
     Plugin 'othree/html5.vim'
     Plugin 'ekalinin/Dockerfile.vim'
-"    Plugin 'nvie/vim-flake8'                    " Python PEP8
     Plugin 'fisadev/vim-isort'                  " Python sort import
                                                 " Requires: pip install isort
 

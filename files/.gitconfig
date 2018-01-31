@@ -4,7 +4,7 @@
     signingkey = F36DD5E9
 
 [commit]
-    gpgSign=true
+    #gpgSign=true
 
 [github]
     user = MartinBrugnara

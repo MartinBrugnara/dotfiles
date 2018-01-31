@@ -42,8 +42,7 @@ macro index,pager a "<pipe-message>goobook add<return>" "add sender to google co
 bind editor <Tab> complete-query
 
 # View URLs inside Mutt
-macro index \cb   "|urlview\n"
-macro pager \cb   "|urlview\n"
+macro index,pager \Cl   "|urlview\n"
 
 
 source ~/.mutt/sidebar.muttrc

@@ -20,13 +20,23 @@ brew install binutils coreutils diffutils gawk gnu-getopt gnutls gzip watch wget
   wdiff --with-gettext
 
 echo "> Update existing gnu utilities"
-brew install bash  gpatch less m4 make
+brew install bash cmake gpatch less m4 make
 
 echo "> Install daily programs/utilities"
-brew install file-formula git openssh perl python pypy go ruby rsync \
-  svn mercurial unzip screen tmux htop neovim  --override-system-vi \
-  openvpn sshfs android-platform-tools youtube-dl
+brew install android-platform-tools axel clang-format file-formula git go \
+    haskell-stack htop imagemagick install lynks mercurial mozjpeg neomutt \
+    neovim --override-system-vi openssh openvpn perl python python3 rsync \
+    ruby sassc screen sshfs svn tmux unzip ykpers youtube-dl
 
 echo "> Install applications"
 brew cask install postgres
-brew install virt-manager virt-viewer
+brew install mariadb virt-manager virt-viewer
+
+echo "> Install python pkgs"
+# Mutt
+pip2 install goobooks isort
+
+
+# After install
+echo "> Post installation action required"
+echo "- please execute 'goobook authenticate'"
