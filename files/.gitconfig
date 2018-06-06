@@ -4,7 +4,7 @@
     signingkey = F36DD5E9
 
 [commit]
-    #gpgSign=true
+#    gpgSign=true
 
 [github]
     user = MartinBrugnara
@@ -69,4 +69,5 @@
     # Include summaries of merged commits in newly created merge commit messages
     log = true
 [gpg]
-    program = gpg2
+    # Which is gpg2
+    program = gpg

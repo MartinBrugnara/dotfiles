@@ -172,6 +172,8 @@ function prompt {
     # 37m - White
     # 0 - Normal
     # 1 - Bold
+    local RESET="\[$(tput sgr0)\]"
+
     local BLACK="\[\033[0;30m\]"
     local BLACKBOLD="\[\033[1;30m\]"
     local RED="\[\033[0;31m\]"
@@ -188,14 +190,19 @@ function prompt {
     local CYANBOLD="\[\033[1;36m\]"
     local WHITE="\[\033[0;37m\]"
     local WHITEBOLD="\[\033[1;37m\]"
-    local RESET="\[$(tput sgr0)\]"
 #    local LAMBDA=$'\u03BB'
     local LAMBDA='λ'
 
     # Do not indent (space metters)
+    # Dark theme
     export PS1="$WHITEBOLD\[\e(0\]l\[\e(B\] $YELLOW\@$WHITEBOLD \
 $WHITE[$RED\u$WHITE@$GREEN\h$WHITE]\$(__git_ps1) ${VENV} $CYAN\w\n\
 $WHITEBOLD\[\e(0\]m\[\e(B\]$WHITEBOLD $LAMBDA $RESET"
+
+    # White theme
+#    export PS1="$BLACKBOLD\[\e(0\]l\[\e(B\] $YELLOW\@$BLACKBOLD \
+#$BLACK[$RED\u$BLACK@$GREEN\h$BLACK]\$(__git_ps1) ${VENV} $CYAN\w\n\
+#$BLACKBOLD\[\e(0\]m\[\e(B\]$BLACKBOLD $LAMBDA $RESET"
 }
 prompt
 

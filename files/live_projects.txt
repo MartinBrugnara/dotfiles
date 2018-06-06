@@ -1,0 +1,26 @@
+# Directory prefix, repository
+
+# Camping
+Camping/    git@github.com:CampingPuntaIndiani/CampingPuntaIndiani.github.io.git
+Camping/    git@github.com:MartinBrugnara/logo.git
+Camping/    git@github.com:CampingPuntaIndiani/www.puntaindiani.it.git
+Camping/    git@bitbucket.org:MartinBrugnara/compose.git
+Camping/    git@github.com:MartinBrugnara/CampingSmallProjects.git
+
+GDB/    git@bitbucket.org:amntrento/graphdbcomparison.git
+GDB/    git@github.com:kuzeko/graph-databases-testsuite.git
+GDB/    git@bitbucket.org:dbtrentogdb/graphdbcomparison-code.git
+GDB/    git@bitbucket.org:dbtrentogdb/graphdbcomparison-paper.git
+GDB/    git@bitbucket.org:dbtrentogdb/graphdbcomparison-utils.git
+
+# Personal
+/   git@github.com:MartinBrugnara/martinbrugnara.github.io.git
+/   git@github.com:MartinBrugnara/personal-website-source.git
+/   git@github.com:MartinBrugnara/PersonalSmallProjects.git
+/   git@github.com:MartinBrugnara/dotfiles.git
+
+# Single projects
+/   git@github.com:MartinBrugnara/CLIC.git
+/   git@bitbucket.org:rodrigosestari/crawler.git
+/   git@github.com:MartinBrugnara/dmbcau_reloaded.git
+/   git@github.com:MartinBrugnara/keynotes.git

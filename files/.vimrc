@@ -30,6 +30,7 @@ call vundle#begin()
     Plugin 'scwood/vim-hybrid'      " hybrid
     Plugin 'fatih/molokai'          " molokai
     Plugin 'juanedi/predawn.vim'    " predawn
+    Plugin 'nanotech/jellybeans.vim', { 'tag': 'v1.6' }
 call vundle#end()
 
 
@@ -51,7 +52,10 @@ set title               " set window title = filename
 
 set background=dark
 " set termguicolors     " enable VIM truecolor (a bit buggy), default ON on Neo
-colorscheme hybrid
+"colorscheme hybrid
+colorscheme jellybeans
+let g:jellybeans_use_term_italics = 1
+" set guifont=Monaco:h10
 
 syntax on
 set number
@@ -87,9 +91,12 @@ set ttimeoutlen=50      " fix status bar lag when leaving insert mode
 set nowrap              " (only visual) (do not) wrap lines when out of screen
 set textwidth=0         " return when column > textwidth. (really format text)
 set scrolloff=3         " min # of lines to keep above and below the cursor
+set sidescroll=1        " uncover # columns a time when h scrolling
 set linebreak           " (only visual) \n @ [^a-z0-9]
+set showbreak=↪>
 
-set spell               " spell checking (mv ']s' '[s', add 'zg', fix 'z=')
+
+" set spell               " spell checking (mv ']s' '[s', add 'zg', fix 'z=')
 set wildmenu            " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
 
@@ -118,7 +125,7 @@ set autoindent          " on paste.
 set incsearch           " While typing, the matched string is highlighted.
 set hlsearch            " highlight searched items.
 
-let loaded_matchparen = 1
+" let loaded_matchparen = 1 " Disable feature
 set showmatch           " highlight corresponding bracket.
 set matchtime=2         " how log show match in x/10 seconds.
 set matchpairs+=<:>     " The |%| command jumps from one to the other
@@ -147,17 +154,16 @@ augroup configgroup
 
     autocmd Filetype css setlocal ts=2 sts=2 sw=2
     autocmd Filetype scss setlocal ts=2 sts=2 sw=2
-    autocmd FileType text setlocal  wrap linebreak nolist textwidth=0 wrapmargin=0 formatoptions+=1
-    autocmd BufNewFile,BufRead *.txt setlocal wrap linebreak nolist textwidth=0 wrapmargin=0 formatoptions+=1
+    autocmd Filetype ruby setlocal ts=2 sts=2 sw=2
+"    autocmd BufEnter *.rb colorscheme desert      " Projector friendly colorscheme
 
+    autocmd BufNewFile,BufRead *.txt setlocal ft=text
+    autocmd FileType text setlocal wrap breakindent breakindentopt=sbr nolist textwidth=0 wrapmargin=0 formatoptions+=1 spell
     autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
     autocmd FileType asm set noexpandtab shiftwidth=8 softtabstop=0 syntax=nasm
 
     autocmd BufEnter *.sh setlocal ts=2 sts=2 sw=2
-    autocmd BufNewFile,BufRead *.tex setlocal wrap linebreak nolist
-    autocmd BufNewFile,BufRead *.tex setlocal textwidth=0 wrapmargin=0 formatoptions+=1
-
-    autocmd BufNewFile,BufRead *.dockerfile setlocal nospell
+    autocmd BufNewFile,BufRead *.tex setlocal spell wrap nolist textwidth=0 wrapmargin=0 formatoptions+=1
 
     autocmd BufRead /tmp/mutt-* set tw=72
 augroup END
