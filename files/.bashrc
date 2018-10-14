@@ -11,17 +11,27 @@ export PATH="$HOME/bin:$PATH"
 
 #------------------------------------------------------------------------------#
 # Initialize GPG
-
-# https://rnorth.org/gpg-and-ssh-with-yubikey-for-mac
-# Start or re-use a gpg-agent.
-gpgconf --launch gpg-agent
-
-if [ -f "${HOME}/.gpg-agent-info" ]; then
-  source  "${HOME}/.gpg-agent-info"
-  export GPG_AGENT_INFO
-  export SSH_AUTH_SOCK
+# Enable gpg-agent if it is not running
+# TODO: test linux config
+platform=`uname`
+GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
+if [[ "$platform" == 'Darwin' ]]; then # On macos
+    GPG_AGENT_SOCKET="$HOME/.gnupg/S.gpg-agent.ssh"
 fi
-export GPG_TTY=$(tty)
+
+if [ ! -S $GPG_AGENT_SOCKET ]; then
+  gpg-agent --daemon >/dev/null 2>&1
+  export GPG_TTY=$(tty)
+fi
+
+# Set SSH to use gpg-agent if it is configured to do so
+GNUPGCONFIG=${GNUPGHOME:-"$HOME/.gnupg/gpg-agent.conf"}
+if grep -q enable-ssh-support "$GNUPGCONFIG"; then
+  unset SSH_AGENT_PID
+  export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
+fi
+
+
 
 export PATH=/opt/ykpers-1.17.3-mac/bin:$PATH
 
