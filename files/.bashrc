@@ -63,7 +63,7 @@ PROMPT_COMMAND='history -a'
 # Shortcuts - DRY
 alias mkdir='mkdir -p'
 alias ls='ls -hG'
-alias ll='ls -alhG'
+alias ll='ls -alh --color'
 alias du='du -kh'           # Makes a more readable output.
 alias df='df -kTh'
 alias dsize='du -sh'        # directory 'size'
