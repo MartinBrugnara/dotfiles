@@ -4,24 +4,30 @@
 
 source "$HOME/.secrets.sh"
 
+# Fix locale on OSX
+export LC_ALL=en_US.UTF-8
+export LANG=en_IT.UTF-8
+
 # Sane defaults
 export EDITOR=/usr/bin/vim
 export PATH="$HOME/bin:$PATH"
+
 
 
 #------------------------------------------------------------------------------#
 # Initialize GPG
 # Enable gpg-agent if it is not running
 # TODO: test linux config
-platform=`uname`
+platform=$(uname)
 GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
 if [[ "$platform" == 'Darwin' ]]; then # On macos
     GPG_AGENT_SOCKET="$HOME/.gnupg/S.gpg-agent.ssh"
 fi
 
-if [ ! -S $GPG_AGENT_SOCKET ]; then
+if [ ! -S "$GPG_AGENT_SOCKET" ]; then
   gpg-agent --daemon >/dev/null 2>&1
-  export GPG_TTY=$(tty)
+  GPG_TTY=$(tty)
+  export GPG_TTY
 fi
 
 # Set SSH to use gpg-agent if it is configured to do so
@@ -31,9 +37,14 @@ if grep -q enable-ssh-support "$GNUPGCONFIG"; then
   export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
 fi
 
-
-
 export PATH=/opt/ykpers-1.17.3-mac/bin:$PATH
+
+
+if [[ "$platform" == 'Darwin' ]]; then # On macos
+    # https://stuff-things.net/2016/02/11/stupid-ssh-add-tricks/
+    # Must use -K and osx ssh binary
+    alias ssh_rm_id="/usr/bin/ssh-add -K -d"
+fi
 
 
 #------------------------------------------------------------------------------#
@@ -50,7 +61,7 @@ fi
 
 #------------------------------------------------------------------------------#
 # Neomutt is mutt
-alias mutt=$(which neomutt)
+alias mutt="$(command -v neomutt)"
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 
 #------------------------------------------------------------------------------#
@@ -90,6 +101,16 @@ export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
 export GOPATH=$HOME/go                             # defaults
 export PATH=$GOPATH/bin:$PATH
 
+# USE GO MODULES !!!!
+export GO111MODULE=on
+
+#> Ruby
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+gem_v=$(ls /usr/local/lib/ruby/gems/ | sort -V -r | head -n1)
+export PATH="/usr/local/lib/ruby/gems/$gem_v/bin:$PATH"
+export PATH="/Users/martin/.gem/ruby/$gem_v/bin:$PATH"
+
+
 #> LaTeX
 export PATH=$PATH:/usr/texbin
 
@@ -98,9 +119,12 @@ export PATH=$PATH:/usr/texbin
 # virt-viewer -c qemu+ssh://user@libvirthost/system?socket=/var/run/libvirt/libvirt-sock
 function virt {
     virt-manager \
-        -c qemu+ssh://$1/system?socket=/var/run/libvirt/libvirt-sock \
+        -c "qemu+ssh://$1/system?socket=/var/run/libvirt/libvirt-sock" \
         --debug --no-fork
 }
+
+#> Postgresql.app
+export PATH="/Applications/Postgres.app/Contents/Versions/10/bin/:$PATH"
 
 
 alias python="python -t"
@@ -221,3 +245,4 @@ prompt
 # fixes: new tab same working directory
 shopt -s checkwinsize
 [[ -r "/etc/bashrc_$TERM_PROGRAM" ]] && . "/etc/bashrc_$TERM_PROGRAM"
+export PATH="/usr/local/opt/openssl/bin:$PATH"

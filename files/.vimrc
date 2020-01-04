@@ -165,7 +165,8 @@ augroup configgroup
     autocmd BufEnter *.sh setlocal ts=2 sts=2 sw=2
     autocmd BufNewFile,BufRead *.tex setlocal spell wrap nolist textwidth=0 wrapmargin=0 formatoptions+=1
 
-    autocmd BufRead /tmp/mutt-* set tw=72
+    autocmd BufRead /tmp/mutt-* set tw=72 spell
+    autocmd BufRead */neomutt-* set tw=72 spell
 augroup END
 
 function! StripTrailingWhitespaces()
@@ -185,19 +186,26 @@ autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhite
 " ------------------------------------------------------------------------------
 " Configuration
 
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 1
+
 let g:syntastic_c_compiler="clang"          " Use clang as default
 let g:syntastic_c_compiler_options="-std=c99 -pedantic"
 let g:syntastic_cpp_compiler="clang++"      " Use clang as default
 let g:syntastic_cpp_compiler_options="-std=c++11 -stdlib=libc++ -pedantic"
 
-let g:syntastic_tex_checkers=['chktex']
+" let g:syntastic_tex_checkers=['chktex']
+let g:syntastic_tex_checkers = ['lacheck']
 let g:syntastic_html_tidy_exec = 'tidy5'
-let g:syntastic_go_checkers = ['go', 'golint', 'govet', 'errcheck']
-let g:syntastic_mode_map = { 'mode': 'active', 'active_filetypes': ['go'] }
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 let g:syntastic_javascript_checkers = ['jshint']
 
+"let g:syntastic_go_checkers = ['go', 'golint', 'govet', 'gometalinter']
+"let g:syntastic_go_checkers = ['govet', 'golint', 'gometalinter']
+let g:syntastic_go_checkers = ['govet', 'golint']
+let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_fields = 1
@@ -205,11 +213,14 @@ let g:go_highlight_structs = 1
 let g:go_highlight_interfaces = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = "goimports" " use goimports for auto manage imports
 let g:go_fmt_fail_silently = 0
-let g:go_term_enabled = 1
+let g:go_term_enabled = 0
 let g:go_list_type = "quickfix"
 
+let g:syntastic_cpp_config_file = '.syntastic_cpp_config'
+
+let g:syntastic_python_checkers = ['python3']
 let python_highlight_all=1
 
 " ------------------------------------------------------------------------------
@@ -227,6 +238,8 @@ au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
 autocmd BufWritePre * :retab        " Convert tab to spaces
 
 autocmd BufNewFile,BufRead *.tex set makeprg=latexmk\ -pdf\ %
+
+autocmd BufNewFile,BufWritePost *.go SyntasticCheck
 
 " ------------------------------------------------------------------------------
 " Shortcut

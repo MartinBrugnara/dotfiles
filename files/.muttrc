@@ -41,8 +41,26 @@ set query_command="goobook query %s"
 macro index,pager a "<pipe-message>goobook add<return>" "add sender to google contacts"
 bind editor <Tab> complete-query
 
+# == MACROS ==
 # View URLs inside Mutt
 macro index,pager \Cl   "|urlview\n"
+# Archive messages (will show as dupplicate for up to 2 syncs:
+#     https://grantlucas.com/posts/2014/01/note-archiving-gmail-messages-mutt)
+#macro index,pager A "<save-message>=Archive<enter>" "Archive Message"
+# Gmail shortcuts: https://gitlab.com/muttmua/mutt/wikis/UseCases/Gmail
+bind editor <space> noop
+macro index,pager A "<save-message>=[Gmail]/All Mail<enter><enter>" "Archive"
+macro index,pager d "<save-message>=[Gmail]/Trash<enter><enter>" "Trash"
+
+# https://neomutt.org/guide/configuration.html
+# g is, by default, group-reply (aka reply all)
+# we are going to use G for google related actions (which was fetch-pop)
+bind index G  noop
+macro index Gi "<change-folder>=INBOX<enter>" "Go to inbox"
+macro index Ga "<change-folder>=[Gmail]/All Mail<enter>" "Go to all mail"
+macro index Gs "<change-folder>=[Gmail]/Starred<enter>" "Go to starred messages"
+macro index Gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
+bind index GG first-entry
 
 
 source ~/.mutt/sidebar.muttrc
