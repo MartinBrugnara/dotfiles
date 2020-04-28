@@ -36,13 +36,13 @@ pinentry-program /usr/local/bin/pinentry-mac
 EOF
 
 echo "> Install daily programs/utilities"
-brew install android-platform-tools axel clang-format file-formula git go \
+brew install shellcheck  axel clang-format file-formula git go \
     haskell-stack htop imagemagick install lynx mercurial mozjpeg neomutt \
     neovim --override-system-vi openssh openvpn perl python python3 rsync \
     ruby sassc screen sshfs svn tmux unzip ykpers youtube-dl
 
 echo "> Install applications"
-brew cask install postgres
+brew cask install postgres android-platform-tools
 brew install mariadb virt-manager virt-viewer
 
 echo "> Install python pkgs"

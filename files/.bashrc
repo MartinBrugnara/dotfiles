@@ -12,6 +12,7 @@ export LANG=en_IT.UTF-8
 export EDITOR=/usr/bin/vim
 export PATH="$HOME/bin:$PATH"
 
+function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }
 
 
 #------------------------------------------------------------------------------#
@@ -37,9 +38,6 @@ if grep -q enable-ssh-support "$GNUPGCONFIG"; then
   export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
 fi
 
-export PATH=/opt/ykpers-1.17.3-mac/bin:$PATH
-
-
 if [[ "$platform" == 'Darwin' ]]; then # On macos
     # https://stuff-things.net/2016/02/11/stupid-ssh-add-tricks/
     # Must use -K and osx ssh binary
@@ -58,6 +56,10 @@ if [ -f "$NVIM" ]; then
     alias vim="$NVIM"
     alias ovim="$VIM"
 fi
+
+alias wiki="vim -c VimwikiIndex"
+alias todo="wiki"
+alias note="wiki"
 
 #------------------------------------------------------------------------------#
 # Neomutt is mutt

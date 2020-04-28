@@ -3,18 +3,19 @@
 source  "grep -A2 'mutt' $HOME/.secrets.sh |"
 
 # Folder hooks
-folder-hook 'account.martin.brugnara.gmail.com' source ~/.mutt/gmail'
-folder-hook 'account.martin.brugnara.unitn.it' source ~/.mutt/unitn'
+folder-hook 'account.martin.brugnara.gmail.com' 'source ~/.mutt/account.martin.brugnara.gmail.com'
+folder-hook 'account.martin.brugnara.unitn.it' 'source ~/.mutt/account.martin.brugnara.unitn.it'
 
 # Default account
-source ~/.mutt/account.martin.brugnara.unitn.it
+#source ~/.mutt/account.martin.brugnara.unitn.it
+source ~/.mutt/account.martin.brugnara.gmail.com
 
 # Macros for switching accounts
 macro index <f2> '<sync-mailbox><refresh><enter-command>source ~/.mutt/account.martin.brugnara.unitn.it<enter><change-folder>!<enter>'
 macro index <f3> '<sync-mailbox><refresh><enter-command>source ~/.mutt/account.martin.brugnara.gmail.com<enter><change-folder>!<enter>'
 
 # Fetch mail shortcut
-bind index,pager G imap-fetch-mail
+bind index,pager F imap-fetch-mail
 
 set editor="vim -c 'set textwidth=0'"
 set sleep_time = 0 # remove silly pause

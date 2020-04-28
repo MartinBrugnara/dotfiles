@@ -31,6 +31,9 @@ call vundle#begin()
     Plugin 'fatih/molokai'          " molokai
     Plugin 'juanedi/predawn.vim'    " predawn
     Plugin 'nanotech/jellybeans.vim', { 'tag': 'v1.6' }
+    Plugin 'mitsuhiko/fruity-vim-colorscheme' " fruity
+
+    Plugin 'vimwiki/vimwiki'          " http://vimwiki.github.io/
 call vundle#end()
 
 
@@ -51,16 +54,18 @@ filetype plugin indent on
 set title               " set window title = filename
 
 set background=dark
-" set termguicolors     " enable VIM truecolor (a bit buggy), default ON on Neo
-"colorscheme hybrid
-colorscheme jellybeans
-let g:jellybeans_use_term_italics = 1
-" set guifont=Monaco:h10
+" set termguicolors     " enable VIM truecolor (a bit buggy), default ON on Neods
+colorscheme hybrid
+"colorscheme jellybeans
+" colorscheme myterm
+"let g:jellybeans_use_term_italics = 1
+"set guifont=Monaco:h10
 
 syntax on
 set number
 " set ruler
 let &colorcolumn="80,120"   " Show coding limits
+hi ColorColumn ctermbg=0
 hi LineNr term=bold cterm=NONE ctermfg=White ctermbg=NONE gui=NONE guifg=White guibg=NONE
 
 " == Support function
@@ -94,6 +99,7 @@ set scrolloff=3         " min # of lines to keep above and below the cursor
 set sidescroll=1        " uncover # columns a time when h scrolling
 set linebreak           " (only visual) \n @ [^a-z0-9]
 set showbreak=↪>
+set listchars=eol:¶
 
 
 " set spell               " spell checking (mv ']s' '[s', add 'zg', fix 'z=')
@@ -146,8 +152,8 @@ set nostartofline       " Do not jump to first character with page commands.
 
 " ------------------------------------------------------------------------------
 " Auto commands
-augroup configgroup
-    autocmd!
+"augroup configgroup
+"    autocmd!
     autocmd VimEnter * highlight clear SignColumn
     autocmd FileType php setlocal listchars=tab:+\ ,eol:- formatprg=par\ -w80\ -T4
     autocmd FileType python setlocal commentstring=#\ %s
@@ -167,7 +173,10 @@ augroup configgroup
 
     autocmd BufRead /tmp/mutt-* set tw=72 spell
     autocmd BufRead */neomutt-* set tw=72 spell
-augroup END
+
+    autocmd BufRead *.wiki set spell wrap list textwidth=0 wrapmargin=0
+    autocmd BufRead *.md set spell wrap list textwidth=0 wrapmargin=0
+"augroup END
 
 function! StripTrailingWhitespaces()
     " save last search & cursor position
@@ -179,7 +188,7 @@ function! StripTrailingWhitespaces()
     call cursor(l, c)
 endfunction
 
-let ts_blacklist = ['md', 'markdown', 'make']
+let ts_blacklist = ['md', 'markdown', 'vimwiki', 'make']
 autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhitespaces()
 
 
@@ -220,8 +229,11 @@ let g:go_list_type = "quickfix"
 
 let g:syntastic_cpp_config_file = '.syntastic_cpp_config'
 
-let g:syntastic_python_checkers = ['python3']
+" let g:syntastic_python_python_exec = 'python3'
+" let g:syntastic_python_checkers = ['python']
 let python_highlight_all=1
+
+let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 
 " ------------------------------------------------------------------------------
 " Bindings & Formatting
