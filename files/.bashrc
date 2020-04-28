@@ -17,11 +17,13 @@ function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(
 
 #------------------------------------------------------------------------------#
 # Initialize GPG
+
 # Enable gpg-agent if it is not running
-# TODO: test linux config
+# https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
 platform=$(uname)
 GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
 if [[ "$platform" == 'Darwin' ]]; then # On macos
+    export PATH=/opt/ykpers-1.17.3-mac/bin:$PATH
     GPG_AGENT_SOCKET="$HOME/.gnupg/S.gpg-agent.ssh"
 fi
 
@@ -37,13 +39,14 @@ if grep -q enable-ssh-support "$GNUPGCONFIG"; then
   unset SSH_AGENT_PID
   export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
 fi
+export GPG_TTY=$(tty)
+gpg-connect-agent updatestartuptty /bye >/dev/null
 
 if [[ "$platform" == 'Darwin' ]]; then # On macos
     # https://stuff-things.net/2016/02/11/stupid-ssh-add-tricks/
     # Must use -K and osx ssh binary
     alias ssh_rm_id="/usr/bin/ssh-add -K -d"
 fi
-
 
 #------------------------------------------------------------------------------#
 # Give me a smart editor
@@ -86,7 +89,7 @@ PROMPT_COMMAND='history -a'
 # Shortcuts - DRY
 alias mkdir='mkdir -p'
 alias ls='ls -hG'
-alias ll='ls -alhG'
+alias ll='ls -alh --color'
 alias du='du -kh'           # Makes a more readable output.
 alias df='df -kTh'
 alias dsize='du -sh'        # directory 'size'
