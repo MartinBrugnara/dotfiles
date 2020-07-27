@@ -1,7 +1,11 @@
 [user]
     name = Martin Brugnara
-    email = martin.brugnara@gmail.com
-    signingkey = F36DD5E9
+    # GMAIL / Yuby A
+    # email = martin.brugnara@gmail.com
+    # signingkey = F36DD5E9
+    # IT-ME / Yuby C
+    email = mb@martinbrugnara.me
+    signingkey = A417DF3E
 
 [commit]
 #    gpgSign=true

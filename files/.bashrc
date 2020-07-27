@@ -89,7 +89,8 @@ PROMPT_COMMAND='history -a'
 # Shortcuts - DRY
 alias mkdir='mkdir -p'
 alias ls='ls -hG'
-alias ll='ls -alh --color'
+alias ll='ls -alhG '
+#alias ll='ls -alh --color'
 alias du='du -kh'           # Makes a more readable output.
 alias df='df -kTh'
 alias dsize='du -sh'        # directory 'size'
@@ -115,6 +116,9 @@ gem_v=$(ls /usr/local/lib/ruby/gems/ | sort -V -r | head -n1)
 export PATH="/usr/local/lib/ruby/gems/$gem_v/bin:$PATH"
 export PATH="/Users/martin/.gem/ruby/$gem_v/bin:$PATH"
 
+#> Py
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
 
 #> LaTeX
 export PATH=$PATH:/usr/texbin
@@ -129,11 +133,9 @@ function virt {
 }
 
 #> Postgresql.app
-export PATH="/Applications/Postgres.app/Contents/Versions/10/bin/:$PATH"
-
-
-alias python="python -t"
-
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin/:$PATH"
+#export LIBRARY_PATH="/Applications/Postgres.app/Contents/Versions/latest/include/:$LIBRARY_PATH"
+#export LD_LIBRARY_PATH="/Applications/Postgres.app/Contents/Versions/latest/lib/:$LD_LIBRARY_PATH"
 
 #------------------------------------------------------------------------------#
 # Helpers
@@ -246,8 +248,13 @@ $WHITEBOLD\[\e(0\]m\[\e(B\]$WHITEBOLD $LAMBDA $RESET"
 prompt
 
 
+#export PATH="/usr/local/opt/openssl/bin:$PATH"
+#export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+
+# https://www.vidarholen.net/contents/blog/?p=878
+PROMPT_COMMAND='printf "⏎%$((COLUMNS-1))s\\r"'
+
 # Import from OSX /etc/bashrc
 # fixes: new tab same working directory
 shopt -s checkwinsize
 [[ -r "/etc/bashrc_$TERM_PROGRAM" ]] && . "/etc/bashrc_$TERM_PROGRAM"
-export PATH="/usr/local/opt/openssl/bin:$PATH"

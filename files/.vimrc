@@ -4,6 +4,14 @@ set nocompatible
 set shell=bash
 let mapleader=","
 
+" GUI only
+" set guifont=Monaco:h15
+set guifont=Fira\ Code:h15
+"if has("gui")
+"    set lines=40
+"    set columns=130
+"endif
+
 
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim/
@@ -25,6 +33,7 @@ call vundle#begin()
     Plugin 'ekalinin/Dockerfile.vim'
     Plugin 'fisadev/vim-isort'                  " Python sort import
                                                 " Requires: pip install isort
+    Plugin 'Shougo/neocomplete.vim'
 
     " Themes
     Plugin 'scwood/vim-hybrid'      " hybrid
@@ -32,6 +41,7 @@ call vundle#begin()
     Plugin 'juanedi/predawn.vim'    " predawn
     Plugin 'nanotech/jellybeans.vim', { 'tag': 'v1.6' }
     Plugin 'mitsuhiko/fruity-vim-colorscheme' " fruity
+    Plugin 'lifepillar/vim-solarized8'
 
     Plugin 'vimwiki/vimwiki'          " http://vimwiki.github.io/
 call vundle#end()
@@ -55,10 +65,11 @@ set title               " set window title = filename
 
 set background=dark
 " set termguicolors     " enable VIM truecolor (a bit buggy), default ON on Neods
-colorscheme hybrid
+" colorscheme hybrid
+colorscheme solarized8
 "colorscheme jellybeans
 " colorscheme myterm
-"let g:jellybeans_use_term_italics = 1
+let g:jellybeans_use_term_italics = 1
 "set guifont=Monaco:h10
 
 syntax on
@@ -150,6 +161,37 @@ set swapfile            " Use swap (useful for big files).
 set modeline            " Enable modeline.
 set nostartofline       " Do not jump to first character with page commands.
 
+
+" ------------------------------------------------------------------------------
+" Tabs & buffers
+
+" Enable Elite mode, No ARRRROWWS!!!!
+let g:elite_mode=1
+" Disable arrow movement, resize splits instead.
+if get(g:, 'elite_mode')
+    nnoremap <Up>    :resize +2<CR>
+    nnoremap <Down>  :resize -2<CR>
+    nnoremap <Left>  :vertical resize -2<CR>
+    nnoremap <Right> :vertical resize +2<CR>
+endif
+
+
+" Go to tab by number
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+noremap <leader>6 6gt
+noremap <leader>7 7gt
+noremap <leader>8 8gt
+noremap <leader>9 9gt
+noremap <leader>0 :tablast<cr>
+
+noremap <leader>h :tabprevious<CR>
+noremap <leader>l :tabnext<CR>
+noremap <leader>n :tabnew<CR>
+
 " ------------------------------------------------------------------------------
 " Auto commands
 "augroup configgroup
@@ -190,6 +232,81 @@ endfunction
 
 let ts_blacklist = ['md', 'markdown', 'vimwiki', 'make']
 autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhitespaces()
+
+" ------------------------------------------------------------------------------
+" Neocomplete
+" https://github.com/Shougo/neocomplete.vim
+
+"Note: This option must be set in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : '',
+    \ 'vimshell' : $HOME.'/.vimshell_hist',
+    \ 'scheme' : $HOME.'/.gosh_completions'
+        \ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+    let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? "\<C-y>" : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+
+" Shell like behavior(not recommended).
+"set completeopt+=longest
+"let g:neocomplete#enable_auto_select = 1
+"let g:neocomplete#disable_auto_complete = 1
+"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+" For perlomni.vim setting.
+" https://github.com/c9s/perlomni.vim
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
 
 
 " ------------------------------------------------------------------------------
@@ -258,3 +375,7 @@ autocmd BufNewFile,BufWritePost *.go SyntasticCheck
 nmap <F8> :TagbarToggle<CR>
 map <F7> :NERDTreeToggle<CR>
 let g:vim_isort_map = '<C-i>'       " Sort import
+
+" ------------------------------------------------------------------------------
+" Startup
+au VimEnter *  NERDTree | wincmd w
