@@ -192,6 +192,9 @@ noremap <leader>h :tabprevious<CR>
 noremap <leader>l :tabnext<CR>
 noremap <leader>n :tabnew<CR>
 
+" Exit from the editor with only one command
+noremap Q :qa<CR>
+
 " ------------------------------------------------------------------------------
 " Auto commands
 "augroup configgroup
