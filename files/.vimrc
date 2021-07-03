@@ -4,49 +4,6 @@ set nocompatible
 set shell=bash
 let mapleader=","
 
-" GUI only
-" set guifont=Monaco:h15
-set guifont=Fira\ Code:h15
-"if has("gui")
-"    set lines=40
-"    set columns=130
-"endif
-
-
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim/
-call vundle#begin()
-    Plugin 'VundleVim/Vundle.vim'
-
-    " UI info - utils
-    Plugin 'tpope/vim-fugitive'                 " git integration
-    Plugin 'scrooloose/syntastic'
-    Plugin 'majutsushi/tagbar'
-    Plugin 'jmcantrell/vim-virtualenv'
-    Plugin 'scrooloose/nerdtree'
-
-    " Languages support
-    Plugin 'fatih/vim-go'                       " NOTE: <C-x><C-o> autocomplete
-    Plugin 'rhysd/vim-clang-format'
-    Plugin 'leafgarland/typescript-vim'
-    Plugin 'othree/html5.vim'
-    Plugin 'ekalinin/Dockerfile.vim'
-    Plugin 'fisadev/vim-isort'                  " Python sort import
-                                                " Requires: pip install isort
-    Plugin 'Shougo/neocomplete.vim'
-
-    " Themes
-    Plugin 'scwood/vim-hybrid'      " hybrid
-    Plugin 'fatih/molokai'          " molokai
-    Plugin 'juanedi/predawn.vim'    " predawn
-    Plugin 'nanotech/jellybeans.vim', { 'tag': 'v1.6' }
-    Plugin 'mitsuhiko/fruity-vim-colorscheme' " fruity
-    Plugin 'lifepillar/vim-solarized8'
-
-    Plugin 'vimwiki/vimwiki'          " http://vimwiki.github.io/
-call vundle#end()
-
-
 " ------------------------------------------------------------------------------
 " Global
 
@@ -57,6 +14,9 @@ filetype on
 filetype plugin on
 filetype plugin indent on
 
+set spell
+set spelllang=en
+
 
 " ------------------------------------------------------------------------------
 " Interface
@@ -65,12 +25,7 @@ set title               " set window title = filename
 
 set background=dark
 " set termguicolors     " enable VIM truecolor (a bit buggy), default ON on Neods
-" colorscheme hybrid
-colorscheme solarized8
-"colorscheme jellybeans
-" colorscheme myterm
-let g:jellybeans_use_term_italics = 1
-"set guifont=Monaco:h10
+colorscheme desert
 
 syntax on
 set number
@@ -94,12 +49,9 @@ function! WordCount()
    return s:word_count
 endfunction
 
-set statusline=%{fugitive#statusline()}%{virtualenv#statusline()}%y\ %f\ %m%=wc:%{WordCount()}\ %c:%l/%L
+set statusline=%y\ %f\ %m%=wc:%{WordCount()}\ %c:%l/%L
 set nocursorline
-
-if has('mouse')
-    set mouse= "(|a|extend)
-endif
+set mouse= "
 
 set laststatus=2        " always show the status line
 set ttimeoutlen=50      " fix status bar lag when leaving insert mode
@@ -237,148 +189,17 @@ let ts_blacklist = ['md', 'markdown', 'vimwiki', 'make']
 autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhitespaces()
 
 " ------------------------------------------------------------------------------
-" Neocomplete
-" https://github.com/Shougo/neocomplete.vim
-
-"Note: This option must be set in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? "\<C-y>" : "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
-
-" AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
-
-" Shell like behavior(not recommended).
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
-" For perlomni.vim setting.
-" https://github.com/c9s/perlomni.vim
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-
-
-" ------------------------------------------------------------------------------
-" Configuration
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 1
-
-let g:syntastic_c_compiler="clang"          " Use clang as default
-let g:syntastic_c_compiler_options="-std=c99 -pedantic"
-let g:syntastic_cpp_compiler="clang++"      " Use clang as default
-let g:syntastic_cpp_compiler_options="-std=c++11 -stdlib=libc++ -pedantic"
-
-" let g:syntastic_tex_checkers=['chktex']
-let g:syntastic_tex_checkers = ['lacheck']
-let g:syntastic_html_tidy_exec = 'tidy5'
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-let g:syntastic_javascript_checkers = ['jshint']
-
-"let g:syntastic_go_checkers = ['go', 'golint', 'govet', 'gometalinter']
-"let g:syntastic_go_checkers = ['govet', 'golint', 'gometalinter']
-let g:syntastic_go_checkers = ['govet', 'golint']
-let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_interfaces = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
-let g:go_fmt_command = "goimports" " use goimports for auto manage imports
-let g:go_fmt_fail_silently = 0
-let g:go_term_enabled = 0
-let g:go_list_type = "quickfix"
-
-let g:syntastic_cpp_config_file = '.syntastic_cpp_config'
-
-" let g:syntastic_python_python_exec = 'python3'
-" let g:syntastic_python_checkers = ['python']
-let python_highlight_all=1
-
-let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
-
-" ------------------------------------------------------------------------------
 " Bindings & Formatting
-autocmd FileType c ClangFormatAutoEnable
-" autocmd BufWritePost *.py call Flake8()
-
-" Python
+autocmd FileType c ClangFormatAutoEnable  " Requires clang
+autocmd BufWritePost *.py call Flake8()   " Requires flake8
 
 " Open go doc in vertical window, horizontal, or tab
 au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
 au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
 au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
 
-autocmd BufWritePre * :retab        " Convert tab to spaces
+autocmd BufWritePre * :retab              " Convert tab to spaces
 
 autocmd BufNewFile,BufRead *.tex set makeprg=latexmk\ -pdf\ %
 
 autocmd BufNewFile,BufWritePost *.go SyntasticCheck
-
-" ------------------------------------------------------------------------------
-" Shortcut
-nmap <F8> :TagbarToggle<CR>
-map <F7> :NERDTreeToggle<CR>
-let g:vim_isort_map = '<C-i>'       " Sort import
-
-" ------------------------------------------------------------------------------
-" Startup
-au VimEnter *  NERDTree | wincmd w

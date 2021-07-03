@@ -2,31 +2,17 @@
 # FIX for incoming scp.
 [ -z "$PS1" ] && return
 
-source "$HOME/.secrets.sh"
-
-# Fix locale on OSX
-export LC_ALL=en_US.UTF-8
-export LANG=en_IT.UTF-8
-
 # Sane defaults
 export EDITOR=/usr/bin/vim
 export PATH="$HOME/bin:$PATH"
-
-function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }
-
+export PATH="$HOME/.local/bin:$PATH"
 
 #------------------------------------------------------------------------------#
 # Initialize GPG
 
 # Enable gpg-agent if it is not running
 # https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
-platform=$(uname)
 GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
-if [[ "$platform" == 'Darwin' ]]; then # On macos
-    export PATH=/opt/ykpers-1.17.3-mac/bin:$PATH
-    GPG_AGENT_SOCKET="$HOME/.gnupg/S.gpg-agent.ssh"
-fi
-
 if [ ! -S "$GPG_AGENT_SOCKET" ]; then
   gpg-agent --daemon >/dev/null 2>&1
   GPG_TTY=$(tty)
@@ -48,26 +34,28 @@ if [[ "$platform" == 'Darwin' ]]; then # On macos
     alias ssh_rm_id="/usr/bin/ssh-add -K -d"
 fi
 
-#------------------------------------------------------------------------------#
-# Give me a smart editor
-VIM=/usr/bin/vim
-NVIM=/usr/local/bin/nvim
-export EDITOR=$VIM
-
-if [ -f "$NVIM" ]; then
-    export EDITOR=$NVIM
-    alias vim="$NVIM"
-    alias ovim="$VIM"
+# Fedora random workaround
+# Reacall to disable pcscd (systemctl disable --now pcscd.socket pcscd.service)
+#  https://discussion.fedoraproject.org/t/gpg-and-pcscd-on-fedora-33/24397
+#  https://support.nitrokey.com/t/openpgp-card-not-available-no-such-device/2018
+GOT_YUBI=$(lsusb | grep Yubico | wc -l)
+if [[ "$GOT_YUBI" != '0' ]]; then
+	# we got yubikey, check for keys
+	GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+	if [[ "$GOT_KEYS" == '0' ]]; then
+		# something is wrong, try to fix
+		echo "Trying fixing GPG"
+		pkill gpg-agent
+		pkill scdaemon
+		gpg --card-status > /dev/null 2>&1
+	fi
 fi
 
+
+#------------------------------------------------------------------------------#
 alias wiki="vim -c VimwikiIndex"
 alias todo="wiki"
 alias note="wiki"
-
-#------------------------------------------------------------------------------#
-# Neomutt is mutt
-alias mutt="$(command -v neomutt)"
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 
 #------------------------------------------------------------------------------#
 # BASH HISTORY
@@ -89,19 +77,14 @@ PROMPT_COMMAND='history -a'
 # Shortcuts - DRY
 alias mkdir='mkdir -p'
 alias ls='ls -hG'
-alias ll='ls -alhG '
-#alias ll='ls -alh --color'
+#alias ll='ls -alhG '
+alias ll='ls -alh --color'
 alias du='du -kh'           # Makes a more readable output.
 alias df='df -kTh'
 alias dsize='du -sh'        # directory 'size'
 
 #------------------------------------------------------------------------------#
-# HOMEBREW
-export HOMEBREW_MAKE_JOBS=4
-export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
-
-#------------------------------------------------------------------------------#
-# Brew Applications fixes & shortcuts
+# Applications fixes & shortcuts
 
 #> GO
 export GOPATH=$HOME/go                             # defaults
@@ -109,19 +92,6 @@ export PATH=$GOPATH/bin:$PATH
 
 # USE GO MODULES !!!!
 export GO111MODULE=on
-
-#> Ruby
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-gem_v=$(ls /usr/local/lib/ruby/gems/ | sort -V -r | head -n1)
-export PATH="/usr/local/lib/ruby/gems/$gem_v/bin:$PATH"
-export PATH="/Users/martin/.gem/ruby/$gem_v/bin:$PATH"
-
-#> Py
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
-
-
-#> LaTeX
-export PATH=$PATH:/usr/texbin
 
 #> Virt-Manger
 # virt-manager -c qemu+ssh://user@libvirthost/system?socket=/var/run/libvirt/libvirt-sock
@@ -132,13 +102,20 @@ function virt {
         --debug --no-fork
 }
 
-#> Postgresql.app
-export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin/:$PATH"
-#export LIBRARY_PATH="/Applications/Postgres.app/Contents/Versions/latest/include/:$LIBRARY_PATH"
-#export LD_LIBRARY_PATH="/Applications/Postgres.app/Contents/Versions/latest/lib/:$LD_LIBRARY_PATH"
-
 #------------------------------------------------------------------------------#
 # Helpers
+
+function open() {
+	local cmd=xdg-open
+	if [[ "$platform" == 'Darwin' ]]; then # on macos
+		cmd=open
+	fi
+	$cmd "$@" &
+	
+}
+
+function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }
+
 
 function dav_to_mp4 {
     # Useful to convert security cam video extracted from SmartPSS
@@ -151,17 +128,13 @@ function who_listen {
     lsof -n -i4TCP:$1 | grep LISTEN
 }
 
-function compress {
+function img_compress {
     for fname in "$@"; do
         echo "$fname"
         org="${fname%.*}.org.${fname##*.}"
         mv "$fname" "$org"
         convert "$org" pnm:- | cjpeg -optimize -progressive -quality 90 > "${fname%.*}.jpg"
     done
-}
-
-function weather {
-    curl http://wttr.in/Trento
 }
 
 
@@ -246,10 +219,6 @@ $WHITEBOLD\[\e(0\]m\[\e(B\]$WHITEBOLD $LAMBDA $RESET"
 #$BLACKBOLD\[\e(0\]m\[\e(B\]$BLACKBOLD $LAMBDA $RESET"
 }
 prompt
-
-
-#export PATH="/usr/local/opt/openssl/bin:$PATH"
-#export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
 
 # https://www.vidarholen.net/contents/blog/?p=878
 PROMPT_COMMAND='printf "⏎%$((COLUMNS-1))s\\r"'
