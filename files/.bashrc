@@ -10,6 +10,8 @@ export PATH="$HOME/.local/bin:$PATH"
 #------------------------------------------------------------------------------#
 # Initialize GPG
 
+platform=$(uname)
+
 # Enable gpg-agent if it is not running
 # https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
 GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
@@ -38,17 +40,20 @@ fi
 # Reacall to disable pcscd (systemctl disable --now pcscd.socket pcscd.service)
 #  https://discussion.fedoraproject.org/t/gpg-and-pcscd-on-fedora-33/24397
 #  https://support.nitrokey.com/t/openpgp-card-not-available-no-such-device/2018
-GOT_YUBI=$(lsusb | grep Yubico | wc -l)
-if [[ "$GOT_YUBI" != '0' ]]; then
-	# we got yubikey, check for keys
-	GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
-	if [[ "$GOT_KEYS" == '0' ]]; then
-		# something is wrong, try to fix
-		echo "Trying fixing GPG"
-		pkill gpg-agent
-		pkill scdaemon
-		gpg --card-status > /dev/null 2>&1
-	fi
+if [[ "$platform" != 'Darwin' ]]; then # On macos
+
+    GOT_YUBI=$(lsusb | grep Yubico | wc -l)
+    if [[ "$GOT_YUBI" != '0' ]]; then
+        # we got yubikey, check for keys
+        GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+        if [[ "$GOT_KEYS" == '0' ]]; then
+            # something is wrong, try to fix
+            echo "Trying fixing GPG"
+            pkill gpg-agent
+            pkill scdaemon
+            gpg --card-status > /dev/null 2>&1
+        fi
+    fi
 fi
 
 
@@ -106,12 +111,12 @@ function virt {
 # Helpers
 
 function open() {
-	local cmd=xdg-open
-	if [[ "$platform" == 'Darwin' ]]; then # on macos
-		cmd=open
-	fi
-	$cmd "$@" &
-	
+    local cmd=xdg-open
+    if [[ "$platform" == 'Darwin' ]]; then # on macos
+        cmd=open
+    fi
+    $cmd "$@" &
+
 }
 
 function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }
