@@ -15,6 +15,9 @@ platform=$(uname)
 # Enable gpg-agent if it is not running
 # https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
 GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
+if [[ "$platform" == 'Darwin' ]]; then # On macos
+    GPG_AGENT_SOCKET=$HOME/.gnupg/S.gpg-agent.ssh
+fi
 if [ ! -S "$GPG_AGENT_SOCKET" ]; then
   gpg-agent --daemon >/dev/null 2>&1
   GPG_TTY=$(tty)
