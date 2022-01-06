@@ -115,7 +115,8 @@
             "car": "",
             "default": ["", "", ""]
         },
-        "on-click": "easyeffects"
+        // "on-click": "easyeffects"
+        "on-click": "pavucontrol"
     },
     "custom/power":{
         "format":"",

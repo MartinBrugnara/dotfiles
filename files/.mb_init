@@ -1,0 +1,138 @@
+# This file is sourced by both bash and zsh!
+# -----------------
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+
+# Sane defaults
+export EDITOR=/usr/bin/vim
+export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+#------------------------------------------------------------------------------#
+# Initialize GPG
+
+platform=$(uname)
+
+# Enable gpg-agent if it is not running
+# https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
+GPG_AGENT_SOCKET="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"  # On linux
+if [[ "$platform" == 'Darwin' ]]; then # On macos
+    GPG_AGENT_SOCKET=$HOME/.gnupg/S.gpg-agent.ssh
+fi
+if [ ! -S "$GPG_AGENT_SOCKET" ]; then
+  gpg-agent --daemon >/dev/null 2>&1
+  GPG_TTY=$(tty)
+  export GPG_TTY
+fi
+
+# Set SSH to use gpg-agent if it is configured to do so
+GNUPGCONFIG=${GNUPGHOME:-"$HOME/.gnupg/gpg-agent.conf"}
+if grep -q enable-ssh-support "$GNUPGCONFIG"; then
+  unset SSH_AGENT_PID
+  export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
+fi
+export GPG_TTY=$(tty)
+gpg-connect-agent updatestartuptty /bye >/dev/null
+
+if [[ "$platform" == 'Darwin' ]]; then # On macos
+    # https://stuff-things.net/2016/02/11/stupid-ssh-add-tricks/
+    # Must use -K and osx ssh binary
+    alias ssh_rm_id="/usr/bin/ssh-add -K -d"
+fi
+
+# Fedora random workaround
+# Reacall to disable pcscd (systemctl disable --now pcscd.socket pcscd.service)
+#  https://discussion.fedoraproject.org/t/gpg-and-pcscd-on-fedora-33/24397
+#  https://support.nitrokey.com/t/openpgp-card-not-available-no-such-device/2018
+GOT_YUBI=$(lsusb | grep Yubico | wc -l)
+if [[ "$GOT_YUBI" != '0' ]]; then
+    # we got yubikey, check for keys
+    GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+    if [[ "$GOT_KEYS" == '0' ]]; then
+        # something is wrong, try to fix
+        pkill -u $USER gpg-agent
+        pkill -u $USER scdaemon
+        gpg --card-status > /dev/null 2>&1
+        # Since F35
+        sudo systemctl restart pcscd.service
+    fi
+    GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+    if [[ "$GOT_KEYS" == '0' ]]; then
+        echo "Tryied fixing GPG and failed 😥."
+    fi
+fi
+
+
+#------------------------------------------------------------------------------#
+alias wiki="vim -c VimwikiIndex"
+alias todo="wiki"
+alias note="wiki"
+
+#------------------------------------------------------------------------------#
+# Shortcuts - DRY
+alias mkdir='mkdir -p'
+alias ls='ls -h'
+#alias ll='ls -alhG '
+alias ll='ls -alh --color'
+alias du='du -kh'           # Makes a more readable output.
+alias df='df -kTh'
+alias dsize='du -sh'        # directory 'size'
+
+#------------------------------------------------------------------------------#
+# Applications fixes & shortcuts
+
+#> GO
+export GOPATH=$HOME/go                             # defaults
+export PATH=$GOPATH/bin:$PATH
+
+# USE GO MODULES !!!!
+export GO111MODULE=on
+
+#> Virt-Manger
+# virt-manager -c qemu+ssh://user@libvirthost/system?socket=/var/run/libvirt/libvirt-sock
+# virt-viewer -c qemu+ssh://user@libvirthost/system?socket=/var/run/libvirt/libvirt-sock
+function virt {
+    virt-manager \
+        -c "qemu+ssh://$1/system?socket=/var/run/libvirt/libvirt-sock" \
+        --debug --no-fork
+}
+
+#> Rust
+. "$HOME/.cargo/env"
+
+#------------------------------------------------------------------------------#
+# Helpers
+
+function open() {
+    local cmd=xdg-open
+    if [[ "$platform" == 'Darwin' ]]; then # on macos
+        cmd=open
+    fi
+    $cmd "$@" &
+
+}
+
+function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }
+
+
+function dav_to_mp4 {
+    # Useful to convert security cam video extracted from SmartPSS
+    ffmpeg -i "${1}" -vcodec libx264 -crf 18 "${1}.mp4"
+}
+
+
+function who_listen {
+    # Listen running service
+    lsof -n -i4TCP:$1 | grep LISTEN
+}
+
+function img_compress {
+    for fname in "$@"; do
+        echo "$fname"
+        org="${fname%.*}.org.${fname##*.}"
+        mv "$fname" "$org"
+        convert "$org" pnm:- | cjpeg -optimize -progressive -quality 90 > "${fname%.*}.jpg"
+    done
+}
