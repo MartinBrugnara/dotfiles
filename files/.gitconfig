@@ -76,3 +76,5 @@
 [gpg]
     # Which is gpg2
     program = gpg
+[init]
+	defaultBranch = main

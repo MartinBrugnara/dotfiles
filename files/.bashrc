@@ -40,15 +40,20 @@ fi
 #  https://support.nitrokey.com/t/openpgp-card-not-available-no-such-device/2018
 GOT_YUBI=$(lsusb | grep Yubico | wc -l)
 if [[ "$GOT_YUBI" != '0' ]]; then
-	# we got yubikey, check for keys
-	GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
-	if [[ "$GOT_KEYS" == '0' ]]; then
-		# something is wrong, try to fix
-		echo "Trying fixing GPG"
-		pkill gpg-agent
-		pkill scdaemon
-		gpg --card-status > /dev/null 2>&1
-	fi
+    # we got yubikey, check for keys
+    GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+    if [[ "$GOT_KEYS" == '0' ]]; then
+        # something is wrong, try to fix
+        pkill -u $USER gpg-agent
+        pkill -u $USER scdaemon
+        gpg --card-status > /dev/null 2>&1
+        # Since F35
+        sudo systemctl restart pcscd.service
+    fi
+    GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+    if [[ "$GOT_KEYS" == '0' ]]; then
+        echo "Tryied fixing GPG and failed 😥."
+    fi
 fi
 
 
@@ -76,7 +81,7 @@ PROMPT_COMMAND='history -a'
 #------------------------------------------------------------------------------#
 # Shortcuts - DRY
 alias mkdir='mkdir -p'
-alias ls='ls -hG'
+alias ls='ls -h'
 #alias ll='ls -alhG '
 alias ll='ls -alh --color'
 alias du='du -kh'           # Makes a more readable output.
@@ -102,16 +107,19 @@ function virt {
         --debug --no-fork
 }
 
+#> Rust
+. "$HOME/.cargo/env"
+
 #------------------------------------------------------------------------------#
 # Helpers
 
 function open() {
-	local cmd=xdg-open
-	if [[ "$platform" == 'Darwin' ]]; then # on macos
-		cmd=open
-	fi
-	$cmd "$@" &
-	
+    local cmd=xdg-open
+    if [[ "$platform" == 'Darwin' ]]; then # on macos
+        cmd=open
+    fi
+    $cmd "$@" &
+
 }
 
 function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }

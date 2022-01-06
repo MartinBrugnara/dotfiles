@@ -173,6 +173,7 @@ noremap Q :qa<CR>
 
     autocmd BufRead *.wiki set spell wrap list textwidth=0 wrapmargin=0
     autocmd BufRead *.md set spell wrap list textwidth=0 wrapmargin=0
+    autocmd BufRead *.yml set nospell
 "augroup END
 
 function! StripTrailingWhitespaces()
