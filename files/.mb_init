@@ -73,7 +73,7 @@ alias note="wiki"
 #------------------------------------------------------------------------------#
 # Shortcuts - DRY
 alias mkdir='mkdir -p'
-alias ls='ls -h'
+alias ls='ls -h --color'
 #alias ll='ls -alhG '
 alias ll='ls -alh --color'
 alias du='du -kh'           # Makes a more readable output.
@@ -136,3 +136,9 @@ function img_compress {
         convert "$org" pnm:- | cjpeg -optimize -progressive -quality 90 > "${fname%.*}.jpg"
     done
 }
+
+
+export SERENITY_ARCH=x86_64
+
+# Set powerline frequency for webcam to 50hz!
+#v4l2-ctl --set-ctrl=power_line_frequency=1 -d /dev/video1
