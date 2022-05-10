@@ -174,6 +174,8 @@ noremap Q :qa<CR>
     autocmd BufRead *.wiki set spell wrap list textwidth=0 wrapmargin=0
     autocmd BufRead *.md set spell wrap list textwidth=0 wrapmargin=0
     autocmd BufRead *.yml set nospell
+
+    autocmd BufRead *.conf set nospell wrap
 "augroup END
 
 function! StripTrailingWhitespaces()
@@ -192,7 +194,8 @@ autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhite
 " ------------------------------------------------------------------------------
 " Bindings & Formatting
 autocmd FileType c ClangFormatAutoEnable  " Requires clang
-autocmd BufWritePost *.py call Flake8()   " Requires flake8
+" autocmd BufWritePost *.py call Flake8()   " Requires flake8
+autocmd BufWritePost *.py call flake8#Flake8()
 
 " Open go doc in vertical window, horizontal, or tab
 au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
