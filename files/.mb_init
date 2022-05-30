@@ -42,25 +42,27 @@ if [[ "$platform" == 'Darwin' ]]; then # On macos
     alias ssh_rm_id="/usr/bin/ssh-add -K -d"
 fi
 
+if [[ "$platform" != 'Darwin' ]]; then # On macos
 # Fedora random workaround
 # Reacall to disable pcscd (systemctl disable --now pcscd.socket pcscd.service)
 #  https://discussion.fedoraproject.org/t/gpg-and-pcscd-on-fedora-33/24397
 #  https://support.nitrokey.com/t/openpgp-card-not-available-no-such-device/2018
-GOT_YUBI=$(lsusb | grep Yubico | wc -l)
-if [[ "$GOT_YUBI" != '0' ]]; then
-    # we got yubikey, check for keys
-    GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
-    if [[ "$GOT_KEYS" == '0' ]]; then
-        # something is wrong, try to fix
-        pkill -u $USER gpg-agent
-        pkill -u $USER scdaemon
-        gpg --card-status > /dev/null 2>&1
-        # Since F35
-        sudo systemctl restart pcscd.service
-    fi
-    GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
-    if [[ "$GOT_KEYS" == '0' ]]; then
-        echo "Tryied fixing GPG and failed 😥."
+    GOT_YUBI=$(lsusb | grep Yubico | wc -l)
+    if [[ "$GOT_YUBI" != '0' ]]; then
+        # we got yubikey, check for keys
+        GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+        if [[ "$GOT_KEYS" == '0' ]]; then
+            # something is wrong, try to fix
+            pkill -u $USER gpg-agent
+            pkill -u $USER scdaemon
+            gpg --card-status > /dev/null 2>&1
+            # Since F35
+            sudo systemctl restart pcscd.service
+        fi
+        GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
+        if [[ "$GOT_KEYS" == '0' ]]; then
+            echo "Tryied fixing GPG and failed 😥."
+        fi
     fi
 fi
 
