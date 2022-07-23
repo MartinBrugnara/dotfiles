@@ -107,14 +107,9 @@ function virt {
 #------------------------------------------------------------------------------#
 # Helpers
 
-function open() {
-    local cmd=xdg-open
-    if [[ "$platform" == 'Darwin' ]]; then # on macos
-        cmd=open
-    fi
-    $cmd "$@" &
-
-}
+if [[ "$platform" != 'Darwin' ]]; then # not on macos
+    alias open=xdg-open
+fi
 
 function wiki_commit() { cd $HOME/vimwiki/ && git add . && (git commit -S -m "$(date)" || git commit -m "$(date)" ) && git push; }
 

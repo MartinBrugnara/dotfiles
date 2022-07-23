@@ -27,7 +27,6 @@ set background=dark
 " set termguicolors     " enable VIM truecolor (a bit buggy), default ON on Neods
 colorscheme desert
 
-syntax on
 set number
 " set ruler
 let &colorcolumn="80,120"   " Show coding limits
@@ -95,9 +94,9 @@ set incsearch           " While typing, the matched string is highlighted.
 set hlsearch            " highlight searched items.
 
 " let loaded_matchparen = 1 " Disable feature
-set showmatch           " highlight corresponding bracket.
-set matchtime=2         " how log show match in x/10 seconds.
-set matchpairs+=<:>     " The |%| command jumps from one to the other
+"set showmatch           " highlight corresponding bracket.
+"set matchtime=2         " how log show match in x/10 seconds.
+"set matchpairs+=<:>     " The |%| command jumps from one to the other
 
 set foldenable          " enable folding
 set foldlevelstart=10   " open most folds by default
@@ -172,6 +171,7 @@ noremap Q :qa<CR>
     autocmd BufRead */neomutt-* set tw=72 spell
 
     autocmd BufRead *.wiki set spell wrap list textwidth=0 wrapmargin=0
+    "autocmd BufRead *.md set spell wrap list textwidth=0 wrapmargin=0 filetype=text
     autocmd BufRead *.md set spell wrap list textwidth=0 wrapmargin=0
     autocmd BufRead *.yml set nospell
 
@@ -190,6 +190,9 @@ endfunction
 
 let ts_blacklist = ['md', 'markdown', 'vimwiki', 'make']
 autocmd BufWritePre * if index(ts_blacklist, &ft) < 0 | :call StripTrailingWhitespaces()
+
+
+syntax on
 
 " ------------------------------------------------------------------------------
 " Bindings & Formatting
