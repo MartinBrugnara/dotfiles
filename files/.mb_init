@@ -58,6 +58,8 @@ if [[ "$platform" != 'Darwin' ]]; then # On macos
             gpg --card-status > /dev/null 2>&1
             # Since F35
             sudo systemctl restart pcscd.service
+            # NOTE: the following must be owned by root and have setuid
+            #$HOME/.mb_restart_pcscd
         fi
         GOT_KEYS=$(ssh-add -L | grep cardno | wc -l)
         if [[ "$GOT_KEYS" == '0' ]]; then
@@ -86,8 +88,9 @@ alias dsize='du -sh'        # directory 'size'
 # Applications fixes & shortcuts
 
 #> GO
-export GOPATH=$HOME/go                             # defaults
-export PATH=$GOPATH/bin:$PATH
+export PATH="/opt/go/bin:$PATH"
+export GOPATH="$HOME/go"                             # defaults
+export PATH="$GOPATH/bin:$PATH"
 
 # USE GO MODULES !!!!
 export GO111MODULE=on
