@@ -6,7 +6,7 @@
 
 ### Variables
 #
-# Mod4: Logo key. Use Mod1: for Alt.
+# Logo key. Use Mod1 for Alt.
 set $mod Mod4
 # Home row direction keys, like vim
 set $left h
@@ -14,33 +14,31 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+# Recommends: foot
+set $term foot
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+# Recommends: rofi-wayland
+set $rofi_cmd rofi \
+        -terminal '$term'
+# Shows a combined list of the applications with desktop files and
+# executables from PATH.
+# TODO: add window with the next release of rofi-wayland
+set $menu $rofi_cmd -show combi -combi-modes drun#run -modes combi
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/default.png fill
-
-# Random wallpaper
-#set $wallpapers_path /usr/share/backgrounds/fedora-workstation
-#output * bg `find $wallpapers_path -type f | shuf -n 1` fill
-
+# Requires: desktop-backgrounds-compat, swaybg
+# output * bg /usr/share/backgrounds/default.png fill
+output * bg /home/martin/Pictures/Wallpapers/astronaut-digital-3840x2160-12042.jpg fill
+#
 # Example configuration:
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
-output DP-1 scale 1.5
-output DP-1 pos 0,0 res 3840x2160
-# pos: res / scale
-output DVI-I-1 transform 270
-output DVI-I-1 pos 2560,0 res 1920x1080
-
-
 
 ### Idle configuration
 #
@@ -48,7 +46,7 @@ output DVI-I-1 pos 2560,0 res 1920x1080
 #
 # exec swayidle -w \
 #          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+#          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
 #          before-sleep 'swaylock -f -c 000000'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
@@ -81,6 +79,7 @@ output DVI-I-1 pos 2560,0 res 1920x1080
 
     # Start your launcher
     bindsym $mod+d exec $menu
+    bindsym $mod+space exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -93,7 +92,7 @@ output DVI-I-1 pos 2560,0 res 1920x1080
     bindsym $mod+Shift+c reload
 
     # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 #
 # Moving around:
 #
@@ -166,7 +165,8 @@ output DVI-I-1 pos 2560,0 res 1920x1080
     bindsym $mod+Shift+space floating toggle
 
     # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
+    #bindsym $mod+space focus mode_toggle
+    bindsym $mod+Shift+f focus mode_toggle
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
@@ -207,72 +207,33 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-#
-# Status Bar:
-#
-# Read `man 5 sway-bar` for more information about this section.
-#bar {
-#    position bottom
-#
-#    # When the status_command prints a new line to stdout, swaybar updates.
-#    # The default just shows the current date and time.
-#    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-#
-#    colors {
-#        statusline #ffffff
-#        background #323232
-#        inactive_workspace #32323200 #32323200 #232627
-#    }
-#
-#
-#}
+bindsym $mod+p exec grim $HOME/Pictures/Screenshots/`date +%Y-%m-%d_%H:%M:%S`.png
+bindsym $mod+shift+p exec slurp | grim -g - $HOME/Pictures/Screenshots/`date +%Y-%m-%d_%H:%M:%S`.png
 
+# to configure the bar edit /etc/xdg/waybar/config
 bar {
     swaybar_command waybar
-    position top
-    font "Hack"
-    colors {
-        statusline #e5e9f0
-        background #2e3440
-        inactive_workspace #32323200 #32323200 #5c5c5c
-    }
-    workspace_buttons yes
 }
 
-bindsym --locked XF86AudioLowerVolume exec amixer sset 'Master' playback 5%- 5%- unmute
-bindsym --locked XF86AudioRaiseVolume exec amixer sset 'Master' playback 5%+ 5%+ unmute
-
-set $lock_bg_path /usr/share/backgrounds/fedora-workstation
-bindsym Mod1+l exec swaylock -i `find $lock_bg_path  -type f | shuf -n 1`
-
-default_border pixel 1
-gaps inner 5
-gaps outer 5
-# smart_gaps on
-
-font xft:Hack 10
-
-for_window [title="alsamixer"] floating enable border pixel 1
-for_window [class="Clipgrab"] floating enable
-for_window [title="File Transfer*"] floating enable
-for_window [class="GParted"] floating enable border normal
-for_window [class="Pavucontrol"] floating enable
-for_window [class="Simple-scan"] floating enable border normal
-for_window [class="Skype"] floating enable border normal
-for_window [class="Firefox"] floating enable border none
-for_window [class="skypeforlinux"] floating enable border none
-for_window [class="Telegram*"] floating enable border none
-for_window [class="telegram*"] floating enable border none
-
-for_window [class="pavucontrol"] floating enable border pixel 5
-
-# Does not exists anymore in Gnome.
-# exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-# Must use the one from lxde or xfce
-exec --no-startup-id lxpolkit
-
-# Auto-start application
-exec --no-startup-id /usr/bin/telegram-desktop -startintray -- %u
-
-include /etc/sway/config.d/*
-
+# Include configs from 3 locations:
+#  - /usr/share/sway/config.d
+#  - /etc/sway/config.d
+#  - $XDG_CONFIG_HOME/sway/config.d ($HOME/.config/sway/config.d)
+#
+# If multiple directories contain the files with the same name, the later
+# directory takes precedence; `$XDG_CONFIG_HOME/sway/config.d/20-swayidle.conf`
+# will always be loaded instead of `/usr/share/sway/config.d/20-swayidle.conf`
+# or `/etc/sway/config.d/20-swayidle.conf`
+#
+# This mechanism permits overriding our default configuration per-system
+# (/etc) or per-user ($XDG_CONFIG_HOME) basis. Just create the file you
+# want to modify/override in the higher-level directory.
+#
+# For example, to disable the default bar from Fedora configs, you'll need to
+#     $ echo -n > "$HOME/.config/sway/config.d/90-bar.conf"
+#
+# Note the quoting, the $() and the arguments quoting. All the parts are equally
+# important to make the magic work. And if you want to learn the secret behind
+# the trick, it's all in the `wordexp(3)`.
+#
+include '$(/usr/libexec/sway/layered-include "/usr/share/sway/config.d/*.conf" "/etc/sway/config.d/*.conf" "${XDG_CONFIG_HOME:-$HOME/.config}/sway/config.d/*.conf")'

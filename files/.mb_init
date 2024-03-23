@@ -142,3 +142,5 @@ export SERENITY_ARCH=x86_64
 
 # Set powerline frequency for webcam to 50hz!
 #v4l2-ctl --set-ctrl=power_line_frequency=1 -d /dev/video1
+
+export TERM=xterm-256color
