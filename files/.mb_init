@@ -31,7 +31,11 @@ fi
 GNUPGCONFIG=${GNUPGHOME:-"$HOME/.gnupg/gpg-agent.conf"}
 if grep -q enable-ssh-support "$GNUPGCONFIG"; then
   unset SSH_AGENT_PID
-  export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
+  if [[ "$platform" == 'FreeBSD' ]]; then
+    export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+  else
+    export SSH_AUTH_SOCK=$GPG_AGENT_SOCKET
+  fi
 fi
 export GPG_TTY=$(tty)
 gpg-connect-agent updatestartuptty /bye >/dev/null
@@ -42,7 +46,7 @@ if [[ "$platform" == 'Darwin' ]]; then # On macos
     alias ssh_rm_id="/usr/bin/ssh-add -K -d"
 fi
 
-if [[ "$platform" != 'Darwin' ]]; then # On macos
+if [[ "$platform" != 'Darwin' ]] && [[ "$platform" != 'FreeBSD' ]] ; then # On macos
 # Fedora random workaround
 # Reacall to disable pcscd (systemctl disable --now pcscd.socket pcscd.service)
 #  https://discussion.fedoraproject.org/t/gpg-and-pcscd-on-fedora-33/24397
@@ -67,6 +71,11 @@ if [[ "$platform" != 'Darwin' ]]; then # On macos
         fi
     fi
 fi
+
+function reinitGPG {
+    gpgconf --kill all
+    gpg --card-status
+}
 
 
 #------------------------------------------------------------------------------#
